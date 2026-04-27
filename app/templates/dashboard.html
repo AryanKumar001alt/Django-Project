@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row mb-4">
+<div class="col-md-4">
+<div class="card">
+<div>Total Forms</div>
+<div class="stat text-primary">{{ total }}</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card">
+<div>Approved</div>
+<div class="stat text-success">{{ approved }}</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card">
+<div>Pending</div>
+<div class="stat text-warning">{{ pending }}</div>
+</div>
+</div>
+</div>
+
+<div class="card">
+
+<table class="table align-middle">
+
+<thead>
+<tr>
+<th>Name</th>
+<th>Course</th>
+<th>Year</th>
+<th>Phone</th>
+<th>Status</th>
+{% if user.is_staff %}
+<th>Action</th>
+{% endif %}
+</tr>
+</thead>
+
+<tbody>
+{% for f in forms %}
+<tr>
+
+<td>{{ f.full_name }}</td>
+<td>{{ f.course }}</td>
+<td>{{ f.year }}</td>
+<td>{{ f.phone }}</td>
+
+<td>
+{% if f.status == "approved" %}
+<span class="badge bg-success">Approved</span>
+{% elif f.status == "rejected" %}
+<span class="badge bg-danger">Rejected</span>
+{% else %}
+<span class="badge bg-warning text-dark">Pending</span>
+{% endif %}
+</td>
+
+{% if user.is_staff %}
+<td>
+<div class="d-flex gap-2 action-btns">
+
+<a href="{% url 'edit' f.id %}" class="btn btn-primary btn-sm">✏️</a>
+
+<form method="post" action="{% url 'approve' f.id %}">
+{% csrf_token %}
+<button class="btn btn-success btn-sm">✔</button>
+</form>
+
+<form method="post" action="{% url 'reject' f.id %}">
+{% csrf_token %}
+<button class="btn btn-danger btn-sm">✖</button>
+</form>
+
+<form method="post" action="{% url 'delete' f.id %}">
+{% csrf_token %}
+<button class="btn btn-dark btn-sm">🗑</button>
+</form>
+
+</div>
+</td>
+{% endif %}
+
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}
